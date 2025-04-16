@@ -21,7 +21,8 @@ creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FI
 
 # Google Sheets
 gc = gspread.authorize(creds)
-sheet = gc.open_by_url('https://docs.google.com/spreadsheets/d/1Y7GNqRW1_iOp7rXK-xn6SqGmQOhWhSOSOdQmWlLlXtI/edit?gid=0')
+SHEET_URL = os.getenv("GOOGLE_SHEET_URL")
+sheet = gc.open_by_url(SHEET_URL)
 worksheet = sheet.get_worksheet(0)
 dados = worksheet.get_all_records()
 

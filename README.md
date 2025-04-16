@@ -73,4 +73,4 @@ Se estiveres a ler dados de uma folha de cálculo Google:
 No terminal, corre o seguinte comando:
 
 ```bash
-python3 aaa.py
+python3 run.py
