@@ -1,13 +1,15 @@
-# 🗓️ Marcação Automática de Salas via Google Calendar e Google Sheets
+# 🗓️ WORK 
 
-## ✅ 1. Criar um projeto no Google Cloud
+## Marcação Automática de Salas via Google Calendar e Google Sheets
+
+### ✅ 1. Criar um projeto no Google Cloud
 
 1. Vai a [https://console.cloud.google.com/](https://console.cloud.google.com/)
 2. Cria um novo projeto (ou usa um já existente)
 
 ---
 
-## ✅ 2. Ativar as APIs necessárias
+### ✅ 2. Ativar as APIs necessárias
 
 No mesmo projeto:
 
@@ -18,7 +20,7 @@ No mesmo projeto:
 
 ---
 
-## ✅ 3. Criar uma Service Account
+### ✅ 3. Criar uma Service Account
 
 1. Vai a **IAM e Administração > Contas de serviço**
 2. Clica em **Criar conta de serviço**
@@ -29,7 +31,7 @@ No mesmo projeto:
 
 ---
 
-## ✅ 4. Criar chave da conta de serviço
+### ✅ 4. Criar chave da conta de serviço
 
 1. Na lista de contas de serviço, clica nos **três pontos** da conta que criaste
 2. Escolhe **Gerir chaves**
@@ -37,13 +39,13 @@ No mesmo projeto:
 4. Escolhe o formato **JSON**
 5. Vai descarregar automaticamente um ficheiro `.json` com nome parecido a:
 
-marcador-salas-abc123456789.json
+		marcador-salas-abc123456789.json
 
 6. Muda o nome do ficheiro para `credentials.json` e coloca-o na pasta do teu programa
 
 ---
 
-## ✅ 5. Dar acesso ao Google Calendar
+### ✅ 5. Dar acesso ao Google Calendar
 
 A tua Service Account ainda não tem permissão para adicionar eventos ao teu calendário pessoal:
 
@@ -58,7 +60,7 @@ A tua Service Account ainda não tem permissão para adicionar eventos ao teu ca
 
 ---
 
-## ✅ 6. Partilhar a folha Google Sheets com a Service Account
+### ✅ 6. Partilhar a folha Google Sheets com a Service Account
 
 Se estiveres a ler dados de uma folha de cálculo Google:
 
@@ -68,7 +70,7 @@ Se estiveres a ler dados de uma folha de cálculo Google:
 
 ---
 
-## ✅ 7. Executar o script
+### ✅ 7. Executar o script
 
 No terminal, corre o seguinte comando:
 
