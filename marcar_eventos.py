@@ -23,7 +23,7 @@ creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FI
 gc = gspread.authorize(creds)
 SHEET_URL = os.getenv("GOOGLE_SHEET_URL")
 sheet = gc.open_by_url(SHEET_URL)
-worksheet = sheet.get_worksheet(0)
+worksheet = sheet.worksheet("Folha5")
 dados = worksheet.get_all_records()
 
 # Google Calendar
