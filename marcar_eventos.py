@@ -32,6 +32,41 @@ service = build('calendar', 'v3', credentials=creds)
 # Timezone Lisboa
 tz = pytz.timezone('Europe/Lisbon')
 
+# Criar um conjunto com os eventos esperados da folha (data, sala, lugar)
+eventos_esperados = set()
+for linha in dados:
+    data_str = linha['Data']
+    sala = str(linha['Sala'])
+    lugar = str(linha['Lugar'])
+    data_evento = tz.localize(datetime.datetime.strptime(data_str + " 09:00", "%d/%m/%Y %H:%M"))
+    eventos_esperados.add((data_evento.strftime("%Y-%m-%dT%H:%M"), sala, lugar))
+
+# Obter eventos do Google Calendar nos próximos 30 dias
+now = datetime.datetime.now(tz)
+range_start = now
+range_end = now + datetime.timedelta(days=30)
+
+todos_eventos = service.events().list(
+    calendarId=CALENDAR_ID,
+    timeMin=range_start.astimezone(datetime.timezone.utc).isoformat(),
+    timeMax=range_end.astimezone(datetime.timezone.utc).isoformat(),
+    singleEvents=True
+).execute().get('items', [])
+
+# Apagar eventos do Google Calendar que já não estão na folha
+for evento in todos_eventos:
+    summary = evento.get('summary', '')
+    start_time = evento.get('start', {}).get('dateTime', '')
+    if summary.startswith("Reserva Sala"):
+        match = re.match(r"Reserva Sala (\w+) - Lugar (\w+)", summary)
+        if match:
+            sala_cal, lugar_cal = match.groups()
+            data_cal = datetime.datetime.fromisoformat(start_time).astimezone(tz).strftime("%Y-%m-%dT%H:%M")
+            if (data_cal, sala_cal, lugar_cal) not in eventos_esperados:
+                service.events().delete(calendarId=CALENDAR_ID, eventId=evento['id']).execute()
+                print(f"❌ Evento removido por não existir na folha: {summary} em {data_cal}")
+
+# Criar/atualizar eventos da folha
 for linha in dados:
     data_str = linha['Data']
     sala = str(linha['Sala'])
@@ -41,10 +76,11 @@ for linha in dados:
     fim_evento = data_evento + datetime.timedelta(hours=1)
     summary = f"Reserva Sala {sala} - Lugar {lugar}"
 
-    # Converte para UTC para pesquisa correta
+    # Converte para UTC para pesquisa precisa
     time_min = data_evento.astimezone(datetime.timezone.utc).isoformat()
     time_max = fim_evento.astimezone(datetime.timezone.utc).isoformat()
 
+    # Apaga duplicados para o mesmo horário
     eventos_existentes = service.events().list(
         calendarId=CALENDAR_ID,
         timeMin=time_min,
@@ -52,14 +88,13 @@ for linha in dados:
         singleEvents=True
     ).execute()
 
-    # Apaga eventos com summary a começar por "Reserva Sala"
     for e in eventos_existentes.get('items', []):
         evento_summary = e.get('summary', '')
         if re.search(r'^Reserva Sala', evento_summary):
             service.events().delete(calendarId=CALENDAR_ID, eventId=e['id']).execute()
             print(f"🗑️  Evento antigo apagado: {evento_summary}")
 
-    # Cria novo evento
+    # Criar novo evento
     evento = {
         'summary': summary,
         'start': {
