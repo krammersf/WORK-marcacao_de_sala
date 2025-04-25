@@ -90,9 +90,11 @@ for linha in dados:
 
     for e in eventos_existentes.get('items', []):
         evento_summary = e.get('summary', '')
+        start_time = e.get('start', {}).get('dateTime', '')
         if re.search(r'^Reserva Sala', evento_summary):
+            data_apagado = datetime.datetime.fromisoformat(start_time).astimezone(tz).strftime("%d/%m/%Y %H:%M")
             service.events().delete(calendarId=CALENDAR_ID, eventId=e['id']).execute()
-            print(f"🗑️  Evento antigo apagado: {evento_summary}")
+            print(f"🗑️  Evento antigo apagado: {evento_summary} em {data_apagado} ❌")
 
     # Criar novo evento
     evento = {
@@ -109,4 +111,5 @@ for linha in dados:
     }
 
     created_event = service.events().insert(calendarId=CALENDAR_ID, body=evento).execute()
-    print(f"🗓️  Evento criado com sucesso! Acede aqui: {created_event.get('htmlLink')} ✅")
+    print(f"🗓️  Evento criado com sucesso: {summary} em {data_evento.strftime('%d/%m/%Y %H:%M')} ✅")
+    # print(f"🗓️  Evento criado com sucesso! Acede aqui: {created_event.get('htmlLink')} ✅")

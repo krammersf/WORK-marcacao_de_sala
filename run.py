@@ -45,7 +45,8 @@ response = subprocess.run([python_path, "-c", f"import requests; response = requ
 
 # Verificando a saída da resposta
 if response.returncode == 0 and "200" in response.stdout:
-    print("\n✅ Script JS executado com sucesso!")
+    # print("\n✅ Script JS executado com sucesso!")
+    print("")
 else:
     print(f"❌ Erro ao executar script: {response.stderr}")
     print(f"Resposta do servidor: {response.stdout}")
