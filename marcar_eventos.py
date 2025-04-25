@@ -6,9 +6,22 @@ from dotenv import load_dotenv
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import pytz
+import time
+import sys
 
 # Mensagem inicial
-# print("Está quase...\n")
+print("Está quase...\n")
+
+def animar_quadrados(texto="Em execução", total=10, intervalo=0.3):
+    for i in range(total + 1):
+        cheios = "■" * i
+        vazios = "□" * (total - i)
+        percentagem = " 100%" if i == total else ""
+        barra = f"{texto} {cheios}{vazios}{percentagem}"
+        sys.stdout.write("\r" + barra)
+        sys.stdout.flush()
+        time.sleep(intervalo)
+    print("\n")  # nova linha no fim
 
 # Carrega variáveis do .env
 load_dotenv()
@@ -52,6 +65,8 @@ todos_eventos = service.events().list(
     timeMax=range_end.astimezone(datetime.timezone.utc).isoformat(),
     singleEvents=True
 ).execute().get('items', [])
+
+animar_quadrados()
 
 # Apagar eventos do Google Calendar que já não estão na folha
 for evento in todos_eventos:

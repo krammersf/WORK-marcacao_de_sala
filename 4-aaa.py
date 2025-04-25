@@ -6,7 +6,11 @@ from dotenv import load_dotenv
 from google.oauth2 import service_account
 from gspread_formatting import format_cell_range, CellFormat, NumberFormat
 
-print("Está quase...\n")
+#print("Está quase...\n")
+
+
+
+
 
 # === CONFIGURAÇÃO INICIAL ===
 
@@ -67,7 +71,6 @@ for celula in coluna_a_base_dados:
             lugar = match.group(2)
             dados_extraidos.append([data_atual, sala, lugar])
             data_atual = None  # Limpar para próxima entrada
-            data_atual = None
 
 # === PARTE 2: Atualizar Folha4 ===
 
