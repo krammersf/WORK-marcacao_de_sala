@@ -8,7 +8,7 @@ from googleapiclient.discovery import build
 import pytz
 
 # Mensagem inicial
-print("Está quase...\n")
+# print("Está quase...\n")
 
 # Carrega variáveis do .env
 load_dotenv()

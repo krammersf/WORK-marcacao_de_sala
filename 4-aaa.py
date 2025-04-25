@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from google.oauth2 import service_account
 from gspread_formatting import format_cell_range, CellFormat, NumberFormat
 
-print("Preparando execução...\n")
+print("Está quase...\n")
 
 # === CONFIGURAÇÃO INICIAL ===
 
@@ -74,7 +74,7 @@ for celula in coluna_a_base_dados:
 folha4.clear()
 folha4.append_row(['Data', 'Sala', 'Lugar'])
 folha4.append_rows(dados_extraidos)
-print("Folha4 atualizada com sucesso.")
+# print("Folha4 atualizada com sucesso.")
 
 # === PARTE 3: Copiar para Folha5 sem duplicados ===
 
@@ -132,7 +132,7 @@ formatar_data = CellFormat(
 
 # Aplica a formatação na coluna A (data)
 format_cell_range(folha5, 'A2:A', formatar_data)
-print("✔️ Coluna A formatada como data (dd/mm/yyyy).")
+# print("✔️ Coluna A formatada como data (dd/mm/yyyy).")
 
-print("Dados únicos copiados para 'Folha5' com sucesso e sem duplicados.")
-print("\n✅ Execução concluída e ambiente limpo.")
+# print("Dados únicos copiados para 'Folha5' com sucesso e sem duplicados.")
+# print("\n✅ Execução concluída e ambiente limpo.")
