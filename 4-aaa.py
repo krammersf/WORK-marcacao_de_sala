@@ -8,10 +8,6 @@ from gspread_formatting import format_cell_range, CellFormat, NumberFormat
 
 #print("Está quase...\n")
 
-
-
-
-
 # === CONFIGURAÇÃO INICIAL ===
 
 load_dotenv()

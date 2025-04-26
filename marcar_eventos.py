@@ -16,7 +16,7 @@ def animar_quadrados(texto="Em execução", total=10, intervalo=0.3):
     for i in range(total + 1):
         cheios = "■" * i
         vazios = "□" * (total - i)
-        percentagem = " 100%" if i == total else ""
+        percentagem = f" {i*10}%"
         barra = f"{texto} {cheios}{vazios}{percentagem}"
         sys.stdout.write("\r" + barra)
         sys.stdout.flush()
@@ -51,7 +51,7 @@ for linha in dados:
     data_str = linha['Data']
     sala = str(linha['Sala'])
     lugar = str(linha['Lugar'])
-    data_evento = tz.localize(datetime.datetime.strptime(data_str + " 09:00", "%d/%m/%Y %H:%M"))
+    data_evento = tz.localize(datetime.datetime.strptime(data_str + " 08:50", "%d/%m/%Y %H:%M"))
     eventos_esperados.add((data_evento.strftime("%Y-%m-%dT%H:%M"), sala, lugar))
 
 # Obter eventos do Google Calendar nos próximos 30 dias
@@ -87,8 +87,8 @@ for linha in dados:
     sala = str(linha['Sala'])
     lugar = str(linha['Lugar'])
 
-    data_evento = tz.localize(datetime.datetime.strptime(data_str + " 09:00", "%d/%m/%Y %H:%M"))
-    fim_evento = data_evento + datetime.timedelta(hours=1)
+    data_evento = tz.localize(datetime.datetime.strptime(data_str + " 08:50", "%d/%m/%Y %H:%M"))
+    fim_evento = tz.localize(datetime.datetime.strptime(data_str + " 09:00", "%d/%m/%Y %H:%M"))
     summary = f"Reserva Sala {sala} - Lugar {lugar}"
 
     # Converte para UTC para pesquisa precisa
@@ -123,6 +123,12 @@ for linha in dados:
             'timeZone': 'Europe/Lisbon',
         },
         'colorId': '10',
+        'reminders': {
+            'useDefault': False,
+            'overrides': [
+                {'method': 'popup', 'minutes': 5},
+            ],
+        }
     }
 
     created_event = service.events().insert(calendarId=CALENDAR_ID, body=evento).execute()
