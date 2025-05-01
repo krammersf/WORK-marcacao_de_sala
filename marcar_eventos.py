@@ -10,7 +10,7 @@ import time
 import sys
 
 # Mensagem inicial
-print("Está quase...\n")
+print("\n\nEstá quase...\n")
 
 def animar_quadrados(texto="Em execução", total=10, intervalo=0.3):
     for i in range(total + 1):
@@ -66,7 +66,7 @@ todos_eventos = service.events().list(
     singleEvents=True
 ).execute().get('items', [])
 
-animar_quadrados()
+# animar_quadrados()
 
 # Apagar eventos do Google Calendar que já não estão na folha
 for evento in todos_eventos:
