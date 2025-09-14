@@ -45,17 +45,23 @@ service = build('calendar', 'v3', credentials=creds)
 # Timezone Lisboa
 tz = pytz.timezone('Europe/Lisbon')
 
+# Obter o momento atual para verificação de datas
+now = datetime.datetime.now(tz)
+
 # Criar um conjunto com os eventos esperados da folha (data, sala, lugar)
+# Apenas eventos futuros (após a data atual)
 eventos_esperados = set()
 for linha in dados:
     data_str = linha['Data']
     sala = str(linha['Sala'])
     lugar = str(linha['Lugar'])
     data_evento = tz.localize(datetime.datetime.strptime(data_str + " 08:50", "%d/%m/%Y %H:%M"))
-    eventos_esperados.add((data_evento.strftime("%Y-%m-%dT%H:%M"), sala, lugar))
+    
+    # Só adicionar eventos futuros ao conjunto esperado
+    if data_evento > now:
+        eventos_esperados.add((data_evento.strftime("%Y-%m-%dT%H:%M"), sala, lugar))
 
 # Obter eventos do Google Calendar nos próximos 30 dias
-now = datetime.datetime.now(tz)
 range_start = now
 range_end = now + datetime.timedelta(days=30)
 
@@ -72,11 +78,18 @@ todos_eventos = service.events().list(
 for evento in todos_eventos:
     summary = evento.get('summary', '')
     start_time = evento.get('start', {}).get('dateTime', '')
-    if summary.startswith("Reserva Sala"):
-        match = re.match(r"Reserva Sala (\w+) - Lugar (\w+)", summary)
+    if summary.startswith("Sala"):
+        match = re.match(r"Sala (\w+) - Lugar (\w+)", summary)
         if match:
             sala_cal, lugar_cal = match.groups()
             data_cal = datetime.datetime.fromisoformat(start_time).astimezone(tz).strftime("%Y-%m-%dT%H:%M")
+            
+            # Verificar se o evento é futuro (apenas alterar eventos após a data atual)
+            data_evento_cal = datetime.datetime.fromisoformat(start_time).astimezone(tz)
+            if data_evento_cal <= now:
+                print(f"⏰ Evento ignorado (data passada): {summary} em {data_cal}")
+                continue
+                
             if (data_cal, sala_cal, lugar_cal) not in eventos_esperados:
                 service.events().delete(calendarId=CALENDAR_ID, eventId=evento['id']).execute()
                 print(f"❌ Evento removido por não existir na folha: {summary} em {data_cal}")
@@ -89,7 +102,13 @@ for linha in dados:
 
     data_evento = tz.localize(datetime.datetime.strptime(data_str + " 08:50", "%d/%m/%Y %H:%M"))
     fim_evento = tz.localize(datetime.datetime.strptime(data_str + " 09:00", "%d/%m/%Y %H:%M"))
-    summary = f"Reserva Sala {sala} - Lugar {lugar}"
+    
+    # Verificar se o evento é futuro (apenas alterar eventos após a data atual)
+    if data_evento <= now:
+        print(f"⏰ Evento ignorado (data passada): Sala {sala} - Lugar {lugar} em {data_str}")
+        continue
+    
+    summary = f"Sala {sala} - Lugar {lugar}"
 
     # Converte para UTC para pesquisa precisa
     time_min = data_evento.astimezone(datetime.timezone.utc).isoformat()
@@ -106,7 +125,7 @@ for linha in dados:
     for e in eventos_existentes.get('items', []):
         evento_summary = e.get('summary', '')
         start_time = e.get('start', {}).get('dateTime', '')
-        if re.search(r'^Reserva Sala', evento_summary):
+        if re.search(r'^Sala', evento_summary):
             data_apagado = datetime.datetime.fromisoformat(start_time).astimezone(tz).strftime("%d/%m/%Y %H:%M")
             service.events().delete(calendarId=CALENDAR_ID, eventId=e['id']).execute()
             print(f"🗑️  Evento antigo apagado: {evento_summary} em {data_apagado} ❌")

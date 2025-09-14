@@ -1,5 +1,6 @@
 credentials.json
 acesso-sheet-marcacao-sala-6dd342f15b02.json
 excel_partilhado.txt
+temp_env/
 .env
 __pycache__/
